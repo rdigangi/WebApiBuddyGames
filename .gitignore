@@ -1,0 +1,27 @@
+# Build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE folders
+.vs/
+.idea/
+
+# VS Code local history/cache
+.vscode/*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Local secrets/config overrides
+appsettings.Local.json
+appsettings.*.Local.json
