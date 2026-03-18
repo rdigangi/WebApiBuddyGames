@@ -36,3 +36,9 @@ Content-Type: application/json
 }
 
 ###
+
+GET {{WebApiBuddyGames_HostAddress}}/me
+Authorization: Bearer INSERISCI_ACCESS_TOKEN
+Accept: application/json
+
+###

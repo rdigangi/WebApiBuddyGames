@@ -22,6 +22,7 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 - Login con verifica credenziali (username o email + password)
 - JWT Access Token con claim base (`sub`, `username`, `email`, `role`)
 - Refresh Token con rotazione e persistenza su database
+- Claim `nome` incluso nel JWT per esigenze UI immediate
 - Gestione ruoli tramite tabelle `ruoli` e `utenti_ruoli`
 - Seed iniziale ruoli: `Amministratore`, `Utente`
 
@@ -71,6 +72,9 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
 - `POST /api/authentication/refresh`
    - body: `refreshToken`
    - response: nuovi `accessToken` + `refreshToken`
+- `GET /me`
+   - header: `Authorization: Bearer <accessToken>`
+   - response: profilo completo utente loggato (`id`, `username`, `nome`, `cognome`, `email`, `ruoli`)
 - CRUD REST:
    - `/api/utenti`
    - `/api/partite`

@@ -161,6 +161,32 @@ public class AuthenticationService(
         return ServiceResult<AuthTokensDto>.Success(tokens);
     }
 
+    public async Task<ServiceResult<MeResponseDto>> GetMeAsync(int userId, CancellationToken cancellationToken = default)
+    {
+        if (userId <= 0)
+        {
+            return ServiceResult<MeResponseDto>.Failure("Utente non valido.");
+        }
+
+        var user = await utenteRepository.GetByIdAsync(userId, cancellationToken);
+        if (user is null)
+        {
+            return ServiceResult<MeResponseDto>.Failure("Utente non trovato.");
+        }
+
+        var roles = await utenteRuoloRepository.GetRoleDescriptionsByUserIdAsync(user.Id, cancellationToken);
+
+        return ServiceResult<MeResponseDto>.Success(new MeResponseDto
+        {
+            Id = user.Id,
+            Username = user.Username,
+            Nome = user.Nome,
+            Cognome = user.Cognome,
+            Email = user.Email,
+            Ruoli = roles
+        });
+    }
+
     private async Task<AuthTokensDto> CreateTokensAsync(UtenteDto user, CancellationToken cancellationToken)
     {
         var now = DateTime.UtcNow;
@@ -204,6 +230,8 @@ public class AuthenticationService(
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Name, user.Username),
+            new("nome", user.Nome),
+            new(ClaimTypes.GivenName, user.Nome),
             new(ClaimTypes.Email, user.Email)
         };
 
