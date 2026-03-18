@@ -20,6 +20,8 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 - Health check su `/health`
 - Registrazione utente con hash/salt password (PBKDF2)
 - Login con verifica credenziali (username o email + password)
+- JWT Access Token con claim base (`sub`, `username`, `email`, `role`)
+- Refresh Token con rotazione e persistenza su database
 - Gestione ruoli tramite tabelle `ruoli` e `utenti_ruoli`
 - Seed iniziale ruoli: `Amministratore`, `Utente`
 
@@ -31,11 +33,18 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 
 ## Configurazione
 
-Imposta la connection string in `appsettings.json`:
+Imposta la configurazione in `appsettings.json`:
 
 ```json
 "ConnectionStrings": {
    "Postgres": "Host=localhost;Port=5432;Database=webapibuddygames;Username=postgres;Password=postgres"
+},
+"Jwt": {
+   "Issuer": "WebApiBuddyGames",
+   "Audience": "WebApiBuddyGames.Client",
+   "SecretKey": "CHANGE_ME_WITH_A_VERY_LONG_SECRET_KEY_32+",
+   "AccessTokenMinutes": 15,
+   "RefreshTokenDays": 7
 }
 ```
 
@@ -58,7 +67,10 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
    - body: `username`, `password`, `email`, `nome`, `cognome`
 - `POST /api/authentication/login`
    - body: `usernameOrEmail`, `password`
-   - response: esito autenticazione (`isAuthenticated`)
+   - response: `accessToken`, `refreshToken`, scadenze UTC
+- `POST /api/authentication/refresh`
+   - body: `refreshToken`
+   - response: nuovi `accessToken` + `refreshToken`
 - CRUD REST:
    - `/api/utenti`
    - `/api/partite`
@@ -89,12 +101,19 @@ Migration attualmente presenti:
 
 - `InitialCreate`
 - `AddRuoliUtentiRuoli`
+- `AddRefreshTokensJwtAuth`
 
 ## Modello dati ruoli
 
 - `ruoli`: anagrafica ruoli applicativi (con campi base comuni e identity)
 - `utenti_ruoli`: associazione tra utente e ruolo (con campi base comuni e identity)
 - Vincolo univoco su coppia `UtenteId` + `RuoloId`
+
+## Modello dati refresh token
+
+- `refresh_tokens`: token di rinnovo (in DB viene salvato solo hash SHA-256)
+- Collegamento con `utenti` tramite `UtenteId`
+- Rotazione refresh token ad ogni chiamata di refresh
 
 ## Struttura sintetica
 

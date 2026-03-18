@@ -18,4 +18,6 @@ public class Utente : EntityBase
     public ICollection<PartitaUtente> PartiteUtenti { get; set; } = new List<PartitaUtente>();
 
     public ICollection<UtenteRuolo> UtentiRuoli { get; set; } = new List<UtenteRuolo>();
+
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 }

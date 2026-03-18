@@ -33,6 +33,15 @@ public class UtenteRuoloRepository(AppDbContext dbContext) : IUtenteRuoloReposit
         return entity is null ? null : ToDto(entity);
     }
 
+    public async Task<IReadOnlyList<string>> GetRoleDescriptionsByUserIdAsync(int utenteId, CancellationToken cancellationToken = default) =>
+        await dbContext.UtentiRuoli
+            .AsNoTracking()
+            .Where(x => x.UtenteId == utenteId && x.Attivo && x.DataCancellazione == null)
+            .Where(x => x.Ruolo.Attivo && x.Ruolo.DataCancellazione == null)
+            .Select(x => x.Ruolo.Descrizione)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
     public async Task<IReadOnlyList<UtenteRuoloDto>> GetAllAsync(CancellationToken cancellationToken = default) =>
         await dbContext.UtentiRuoli
             .AsNoTracking()

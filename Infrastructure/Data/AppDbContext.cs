@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Utente> Utenti => Set<Utente>();
     public DbSet<Ruolo> Ruoli => Set<Ruolo>();
     public DbSet<UtenteRuolo> UtentiRuoli => Set<UtenteRuolo>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<Partita> Partite => Set<Partita>();
     public DbSet<PartitaUtente> PartiteUtenti => Set<PartitaUtente>();
     public DbSet<Risultato> Risultati => Set<Risultato>();
@@ -99,6 +100,32 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 
             entity.HasIndex(x => new { x.UtenteId, x.RuoloId })
                 .IsUnique();
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.ToTable("refresh_tokens");
+            ConfigureBaseEntity(entity);
+
+            entity.Property(x => x.TokenHash)
+                .HasMaxLength(128)
+                .IsRequired();
+
+            entity.Property(x => x.ScadenzaUtc)
+                .IsRequired();
+
+            entity.Property(x => x.RevocatoUtc)
+                .IsRequired(false);
+
+            entity.HasOne(x => x.Utente)
+                .WithMany(x => x.RefreshTokens)
+                .HasForeignKey(x => x.UtenteId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(x => x.TokenHash)
+                .IsUnique();
+
+            entity.HasIndex(x => x.UtenteId);
         });
 
         modelBuilder.Entity<Partita>(entity =>

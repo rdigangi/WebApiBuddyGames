@@ -59,7 +59,47 @@ public class AuthenticationController(IAuthenticationService authenticationServi
         return Ok(new
         {
             isAuthenticated = true,
+            accessToken = result.Value?.AccessToken,
+            accessTokenExpiresAtUtc = result.Value?.AccessTokenExpiresAtUtc,
+            refreshToken = result.Value?.RefreshToken,
+            refreshTokenExpiresAtUtc = result.Value?.RefreshTokenExpiresAtUtc,
             message = "Login effettuato con successo."
+        });
+    }
+
+    [HttpPost("refresh")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequestDto request, CancellationToken cancellationToken)
+    {
+        var result = await authenticationService.RefreshTokenAsync(request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            if (result.Error == "Refresh token non valido o scaduto.")
+            {
+                return Unauthorized(new
+                {
+                    isAuthenticated = false,
+                    message = result.Error
+                });
+            }
+
+            return BadRequest(new
+            {
+                isAuthenticated = false,
+                message = result.Error ?? "Refresh token non riuscito."
+            });
+        }
+
+        return Ok(new
+        {
+            isAuthenticated = true,
+            accessToken = result.Value?.AccessToken,
+            accessTokenExpiresAtUtc = result.Value?.AccessTokenExpiresAtUtc,
+            refreshToken = result.Value?.RefreshToken,
+            refreshTokenExpiresAtUtc = result.Value?.RefreshTokenExpiresAtUtc,
+            message = "Token aggiornati con successo."
         });
     }
 }

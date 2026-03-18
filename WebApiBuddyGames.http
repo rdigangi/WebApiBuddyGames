@@ -4,3 +4,35 @@ GET {{WebApiBuddyGames_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{WebApiBuddyGames_HostAddress}}/api/authentication/register
+Content-Type: application/json
+
+{
+	"username": "utente.demo",
+	"password": "Password123!",
+	"email": "utente.demo@example.com",
+	"nome": "Utente",
+	"cognome": "Demo"
+}
+
+###
+
+POST {{WebApiBuddyGames_HostAddress}}/api/authentication/login
+Content-Type: application/json
+
+{
+	"usernameOrEmail": "utente.demo",
+	"password": "Password123!"
+}
+
+###
+
+POST {{WebApiBuddyGames_HostAddress}}/api/authentication/refresh
+Content-Type: application/json
+
+{
+	"refreshToken": "INSERISCI_REFRESH_TOKEN"
+}
+
+###

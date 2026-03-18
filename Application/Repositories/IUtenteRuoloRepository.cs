@@ -8,6 +8,8 @@ public interface IUtenteRuoloRepository
 
     Task<UtenteRuoloDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<string>> GetRoleDescriptionsByUserIdAsync(int utenteId, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<UtenteRuoloDto>> GetAllAsync(CancellationToken cancellationToken = default);
 
     Task<bool> UpdateAsync(UtenteRuoloDto dto, CancellationToken cancellationToken = default);

@@ -32,6 +32,20 @@ public class RuoloRepository(AppDbContext dbContext) : IRuoloRepository
         return entity is null ? null : ToDto(entity);
     }
 
+    public async Task<RuoloDto?> GetByDescrizioneAsync(string descrizione, CancellationToken cancellationToken = default)
+    {
+        var normalizedDescrizione = descrizione.Trim().ToUpperInvariant();
+        var entity = await dbContext.Ruoli
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                x => x.Attivo
+                    && x.DataCancellazione == null
+                    && x.Descrizione.ToUpper() == normalizedDescrizione,
+                cancellationToken);
+
+        return entity is null ? null : ToDto(entity);
+    }
+
     public async Task<IReadOnlyList<RuoloDto>> GetAllAsync(CancellationToken cancellationToken = default) =>
         await dbContext.Ruoli
             .AsNoTracking()
