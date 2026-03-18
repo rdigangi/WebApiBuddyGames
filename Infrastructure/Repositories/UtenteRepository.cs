@@ -38,6 +38,21 @@ public class UtenteRepository(AppDbContext dbContext) : IUtenteRepository
             x => x.Email == email && x.Attivo && x.DataCancellazione == null,
             cancellationToken);
 
+    public async Task<UtenteDto?> GetByUsernameOrEmailAsync(string usernameOrEmail, CancellationToken cancellationToken = default)
+    {
+        var normalizedValue = usernameOrEmail.Trim().ToUpperInvariant();
+
+        var entity = await dbContext.Utenti
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                x => x.Attivo
+                    && x.DataCancellazione == null
+                    && (x.Username.ToUpper() == normalizedValue || x.Email.ToUpper() == normalizedValue),
+                cancellationToken);
+
+        return entity is null ? null : ToDto(entity);
+    }
+
     public async Task<UtenteDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
         var entity = await dbContext.Utenti

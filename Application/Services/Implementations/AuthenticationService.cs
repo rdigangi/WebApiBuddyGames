@@ -79,4 +79,31 @@ public class AuthenticationService(IUtenteRepository utenteRepository) : IAuthen
 
         return ServiceResult<int>.Success(0);
     }
+
+    public async Task<ServiceResult<bool>> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.UsernameOrEmail))
+        {
+            return ServiceResult<bool>.Failure("Username o email obbligatori.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Password))
+        {
+            return ServiceResult<bool>.Failure("Password obbligatoria.");
+        }
+
+        var user = await utenteRepository.GetByUsernameOrEmailAsync(request.UsernameOrEmail, cancellationToken);
+        if (user is null)
+        {
+            return ServiceResult<bool>.Failure("Credenziali non valide.");
+        }
+
+        var isValidPassword = PasswordHasher.VerifyPassword(request.Password, user.PasswordHash, user.PasswordSalt);
+        if (!isValidPassword)
+        {
+            return ServiceResult<bool>.Failure("Credenziali non valide.");
+        }
+
+        return ServiceResult<bool>.Success(true);
+    }
 }

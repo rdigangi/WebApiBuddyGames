@@ -53,6 +53,8 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
 
 - `POST /api/authentication/register`
    - body: `username`, `password`, `email`, `nome`, `cognome`
+- `POST /api/authentication/login`
+   - body: `usernameOrEmail`, `password`
 - CRUD REST:
    - `/api/utenti`
    - `/api/partite`

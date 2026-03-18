@@ -10,6 +10,8 @@ public interface IUtenteRepository
 
     Task<bool> ExistsByEmailAsync(string email, CancellationToken cancellationToken = default);
 
+    Task<UtenteDto?> GetByUsernameOrEmailAsync(string usernameOrEmail, CancellationToken cancellationToken = default);
+
     Task<UtenteDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<UtenteDto>> GetAllAsync(CancellationToken cancellationToken = default);
