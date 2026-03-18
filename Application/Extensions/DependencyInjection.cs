@@ -9,6 +9,8 @@ public static class DependencyInjection
     {
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IUtenteService, UtenteService>();
+        services.AddScoped<IRuoloService, RuoloService>();
+        services.AddScoped<IUtenteRuoloService, UtenteRuoloService>();
         services.AddScoped<IPartitaService, PartitaService>();
         services.AddScoped<IPartitaUtenteService, PartitaUtenteService>();
         services.AddScoped<IRisultatoService, RisultatoService>();

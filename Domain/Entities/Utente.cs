@@ -16,4 +16,6 @@ public class Utente : EntityBase
     public byte[] PasswordSalt { get; set; } = [];
 
     public ICollection<PartitaUtente> PartiteUtenti { get; set; } = new List<PartitaUtente>();
+
+    public ICollection<UtenteRuolo> UtentiRuoli { get; set; } = new List<UtenteRuolo>();
 }

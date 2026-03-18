@@ -5,7 +5,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791)
 ![EF Core](https://img.shields.io/badge/EF%20Core-10-6E4AFF)
 
-Web API ASP.NET Core (.NET 10) per gestione utenti, partite e risultati.
+Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 
 ## Caratteristiche principali
 
@@ -19,6 +19,9 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, partite e risultati.
 - Connessione a PostgreSQL con Entity Framework Core
 - Health check su `/health`
 - Registrazione utente con hash/salt password (PBKDF2)
+- Login con verifica credenziali (username o email + password)
+- Gestione ruoli tramite tabelle `ruoli` e `utenti_ruoli`
+- Seed iniziale ruoli: `Amministratore`, `Utente`
 
 ## Prerequisiti
 
@@ -55,6 +58,7 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
    - body: `username`, `password`, `email`, `nome`, `cognome`
 - `POST /api/authentication/login`
    - body: `usernameOrEmail`, `password`
+   - response: esito autenticazione (`isAuthenticated`)
 - CRUD REST:
    - `/api/utenti`
    - `/api/partite`
@@ -80,6 +84,17 @@ Applicare migration al database:
 Rimuovere ultima migration non applicata:
 
 - `dotnet ef migrations remove`
+
+Migration attualmente presenti:
+
+- `InitialCreate`
+- `AddRuoliUtentiRuoli`
+
+## Modello dati ruoli
+
+- `ruoli`: anagrafica ruoli applicativi (con campi base comuni e identity)
+- `utenti_ruoli`: associazione tra utente e ruolo (con campi base comuni e identity)
+- Vincolo univoco su coppia `UtenteId` + `RuoloId`
 
 ## Struttura sintetica
 

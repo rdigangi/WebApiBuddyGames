@@ -7,6 +7,8 @@ namespace WebApiBuddyGames.Infrastructure.Data;
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
     public DbSet<Utente> Utenti => Set<Utente>();
+    public DbSet<Ruolo> Ruoli => Set<Ruolo>();
+    public DbSet<UtenteRuolo> UtentiRuoli => Set<UtenteRuolo>();
     public DbSet<Partita> Partite => Set<Partita>();
     public DbSet<PartitaUtente> PartiteUtenti => Set<PartitaUtente>();
     public DbSet<Risultato> Risultati => Set<Risultato>();
@@ -49,6 +51,54 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             entity.Property(x => x.PasswordSalt)
                 .HasColumnType("bytea")
                 .IsRequired();
+        });
+
+        modelBuilder.Entity<Ruolo>(entity =>
+        {
+            entity.ToTable("ruoli");
+            ConfigureBaseEntity(entity);
+
+            entity.Property(x => x.Descrizione)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            entity.HasIndex(x => x.Descrizione)
+                .IsUnique();
+
+            entity.HasData(
+                new Ruolo
+                {
+                    Id = 1,
+                    Descrizione = "Amministratore",
+                    Attivo = true,
+                    DataCreazione = new DateTime(2026, 3, 18, 0, 0, 0, DateTimeKind.Utc)
+                },
+                new Ruolo
+                {
+                    Id = 2,
+                    Descrizione = "Utente",
+                    Attivo = true,
+                    DataCreazione = new DateTime(2026, 3, 18, 0, 0, 0, DateTimeKind.Utc)
+                });
+        });
+
+        modelBuilder.Entity<UtenteRuolo>(entity =>
+        {
+            entity.ToTable("utenti_ruoli");
+            ConfigureBaseEntity(entity);
+
+            entity.HasOne(x => x.Utente)
+                .WithMany(x => x.UtentiRuoli)
+                .HasForeignKey(x => x.UtenteId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(x => x.Ruolo)
+                .WithMany(x => x.UtentiRuoli)
+                .HasForeignKey(x => x.RuoloId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(x => new { x.UtenteId, x.RuoloId })
+                .IsUnique();
         });
 
         modelBuilder.Entity<Partita>(entity =>

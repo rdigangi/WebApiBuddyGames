@@ -14,6 +14,8 @@ public static class DependencyInjection
 
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
         services.AddScoped<IUtenteRepository, UtenteRepository>();
+        services.AddScoped<IRuoloRepository, RuoloRepository>();
+        services.AddScoped<IUtenteRuoloRepository, UtenteRuoloRepository>();
         services.AddScoped<IPartitaRepository, PartitaRepository>();
         services.AddScoped<IPartitaUtenteRepository, PartitaUtenteRepository>();
         services.AddScoped<IRisultatoRepository, RisultatoRepository>();
