@@ -10,6 +10,8 @@ public class UtenteDto : EntityBaseDto
 
     public string Email { get; set; } = string.Empty;
 
+    public string? ProfileImageUrl { get; set; }
+
     public byte[] PasswordHash { get; set; } = [];
 
     public byte[] PasswordSalt { get; set; } = [];

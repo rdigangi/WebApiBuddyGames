@@ -12,5 +12,7 @@ public sealed class MeResponseDto
 
     public string Email { get; set; } = string.Empty;
 
+    public string? ProfileImageUrl { get; set; }
+
     public IReadOnlyList<string> Ruoli { get; set; } = [];
 }

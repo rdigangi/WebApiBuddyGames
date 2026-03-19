@@ -50,6 +50,7 @@ public class UtentiController(IUtenteService utenteService) : ControllerBase
             Nome = request.Nome,
             Cognome = request.Cognome,
             Email = request.Email,
+            ProfileImageUrl = request.ProfileImageUrl,
             PasswordHash = hash,
             PasswordSalt = salt,
             Attivo = true
@@ -92,6 +93,7 @@ public class UtentiController(IUtenteService utenteService) : ControllerBase
             Nome = request.Nome,
             Cognome = request.Cognome,
             Email = request.Email,
+            ProfileImageUrl = request.ProfileImageUrl ?? current.ProfileImageUrl,
             PasswordHash = hash,
             PasswordSalt = salt,
             Attivo = request.Attivo,
@@ -124,13 +126,14 @@ public class UtentiController(IUtenteService utenteService) : ControllerBase
         dto.Nome,
         dto.Cognome,
         dto.Email,
+        dto.ProfileImageUrl,
         dto.Attivo,
         dto.DataCreazione,
         dto.DataCancellazione);
 
-    public sealed record CreateUtenteRequest(string Username, string Nome, string Cognome, string Email, string Password);
+    public sealed record CreateUtenteRequest(string Username, string Nome, string Cognome, string Email, string Password, string? ProfileImageUrl = null);
 
-    public sealed record UpdateUtenteRequest(string Username, string Nome, string Cognome, string Email, string? Password, bool Attivo = true);
+    public sealed record UpdateUtenteRequest(string Username, string Nome, string Cognome, string Email, string? Password, bool Attivo = true, string? ProfileImageUrl = null);
 
     public sealed record UtenteResponse(
         int Id,
@@ -138,6 +141,7 @@ public class UtentiController(IUtenteService utenteService) : ControllerBase
         string Nome,
         string Cognome,
         string Email,
+        string? ProfileImageUrl,
         bool Attivo,
         DateTime DataCreazione,
         DateTime? DataCancellazione);

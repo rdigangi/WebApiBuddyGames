@@ -39,6 +39,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
                 .HasMaxLength(255)
                 .IsRequired();
 
+            entity.Property(x => x.ProfileImageUrl)
+                .HasMaxLength(2048)
+                .IsRequired(false);
+
             entity.HasIndex(x => x.Email)
                 .IsUnique();
 

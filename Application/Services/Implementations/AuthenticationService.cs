@@ -183,6 +183,7 @@ public class AuthenticationService(
             Nome = user.Nome,
             Cognome = user.Cognome,
             Email = user.Email,
+            ProfileImageUrl = user.ProfileImageUrl,
             Ruoli = roles
         });
     }

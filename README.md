@@ -10,6 +10,7 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 ## Caratteristiche principali
 
 - Swagger (OpenAPI) abilitato
+- Swagger UI con pulsante `Authorize` per inserire JWT Bearer token
 - Architettura a layer:
    - `Api/Controllers`: endpoint REST
    - `Application/Services`: logica applicativa
@@ -25,6 +26,7 @@ Web API ASP.NET Core (.NET 10) per gestione utenti, ruoli, partite e risultati.
 - Claim `nome` incluso nel JWT per esigenze UI immediate
 - Gestione ruoli tramite tabelle `ruoli` e `utenti_ruoli`
 - Seed iniziale ruoli: `Amministratore`, `Utente`
+- Gestione immagine profilo su Cloudflare R2 (salvataggio URL nel DB utenti)
 
 ## Prerequisiti
 
@@ -46,10 +48,30 @@ Imposta la configurazione in `appsettings.json`:
    "SecretKey": "CHANGE_ME_WITH_A_VERY_LONG_SECRET_KEY_32+",
    "AccessTokenMinutes": 15,
    "RefreshTokenDays": 7
+},
+"CloudflareR2": {
+   "AccountId": "<account-id>",
+   "AccessKeyId": "<access-key-id>",
+   "SecretAccessKey": "<secret-access-key>",
+   "BucketName": "<bucket-name>",
+   "ServiceUrl": "https://<account-id>.r2.cloudflarestorage.com",
+   "PublicBaseUrl": "https://<tuo-dominio-pubblico-o-r2-dev-url>/<bucket-name>"
 }
 ```
 
 Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabili ambiente.
+
+### Segreti locali (consigliato)
+
+Per evitare di salvare chiavi sensibili nel repository, usa `dotnet user-secrets`:
+
+- `dotnet user-secrets init`
+- `dotnet user-secrets set "CloudflareR2:AccountId" "<value>"`
+- `dotnet user-secrets set "CloudflareR2:AccessKeyId" "<value>"`
+- `dotnet user-secrets set "CloudflareR2:SecretAccessKey" "<value>"`
+- `dotnet user-secrets set "CloudflareR2:BucketName" "<value>"`
+- `dotnet user-secrets set "CloudflareR2:ServiceUrl" "<value>"`
+- `dotnet user-secrets set "CloudflareR2:PublicBaseUrl" "<value>"`
 
 ## Avvio progetto
 
@@ -61,6 +83,13 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
     - `dotnet run`
 4. Apri Swagger UI:
     - `http://localhost:<porta>/swagger`
+
+Per testare endpoint protetti da Swagger:
+
+1. Esegui login (`POST /api/authentication/login`)
+2. Copia `accessToken`
+3. Clicca `Authorize` in alto a destra
+4. Inserisci `Bearer <accessToken>`
 
 ## Endpoint disponibili (principali)
 
@@ -74,7 +103,15 @@ Puoi sovrascrivere i valori in `appsettings.Development.json` o tramite variabil
    - response: nuovi `accessToken` + `refreshToken`
 - `GET /me`
    - header: `Authorization: Bearer <accessToken>`
-   - response: profilo completo utente loggato (`id`, `username`, `nome`, `cognome`, `email`, `ruoli`)
+   - response: profilo completo utente loggato (`id`, `username`, `nome`, `cognome`, `email`, `profileImageUrl`, `ruoli`)
+- `POST /me/profile-image`
+   - header: `Authorization: Bearer <accessToken>`
+   - body: `multipart/form-data` con campo `file`
+   - upload immagine su R2 e aggiornamento `ProfileImageUrl`
+   - vincoli file: formati `jpg/jpeg`, `png`, `webp`, `gif`; dimensione massima `5 MB`
+- `DELETE /me/profile-image`
+   - header: `Authorization: Bearer <accessToken>`
+   - rimozione immagine su R2 + reset `ProfileImageUrl`
 - CRUD REST:
    - `/api/utenti`
    - `/api/partite`
@@ -106,6 +143,7 @@ Migration attualmente presenti:
 - `InitialCreate`
 - `AddRuoliUtentiRuoli`
 - `AddRefreshTokensJwtAuth`
+- `AddProfileImageUrlAndCloudflareR2`
 
 ## Modello dati ruoli
 

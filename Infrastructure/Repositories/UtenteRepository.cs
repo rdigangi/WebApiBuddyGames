@@ -16,6 +16,7 @@ public class UtenteRepository(AppDbContext dbContext) : IUtenteRepository
             Nome = dto.Nome,
             Cognome = dto.Cognome,
             Email = dto.Email,
+            ProfileImageUrl = dto.ProfileImageUrl,
             PasswordHash = dto.PasswordHash,
             PasswordSalt = dto.PasswordSalt,
             Attivo = dto.Attivo,
@@ -78,6 +79,7 @@ public class UtenteRepository(AppDbContext dbContext) : IUtenteRepository
                 Nome = x.Nome,
                 Cognome = x.Cognome,
                 Email = x.Email,
+                ProfileImageUrl = x.ProfileImageUrl,
                 PasswordHash = x.PasswordHash,
                 PasswordSalt = x.PasswordSalt
             })
@@ -95,10 +97,29 @@ public class UtenteRepository(AppDbContext dbContext) : IUtenteRepository
         entity.Nome = dto.Nome;
         entity.Cognome = dto.Cognome;
         entity.Email = dto.Email;
+        entity.ProfileImageUrl = dto.ProfileImageUrl;
         entity.PasswordHash = dto.PasswordHash;
         entity.PasswordSalt = dto.PasswordSalt;
         entity.Attivo = dto.Attivo;
         entity.DataCancellazione = dto.DataCancellazione;
+
+        await dbContext.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<bool> UpdateProfileImageUrlAsync(int id, string? profileImageUrl, CancellationToken cancellationToken = default)
+    {
+        var entity = await dbContext.Utenti
+            .FirstOrDefaultAsync(x => x.Id == id && x.DataCancellazione == null && x.Attivo, cancellationToken);
+
+        if (entity is null)
+        {
+            return false;
+        }
+
+        entity.ProfileImageUrl = string.IsNullOrWhiteSpace(profileImageUrl)
+            ? null
+            : profileImageUrl.Trim();
 
         await dbContext.SaveChangesAsync(cancellationToken);
         return true;
@@ -129,6 +150,7 @@ public class UtenteRepository(AppDbContext dbContext) : IUtenteRepository
         Nome = entity.Nome,
         Cognome = entity.Cognome,
         Email = entity.Email,
+        ProfileImageUrl = entity.ProfileImageUrl,
         PasswordHash = entity.PasswordHash,
         PasswordSalt = entity.PasswordSalt
     };

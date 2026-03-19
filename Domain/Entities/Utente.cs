@@ -10,6 +10,8 @@ public class Utente : EntityBase
 
     public string Email { get; set; } = string.Empty;
 
+    public string? ProfileImageUrl { get; set; }
+
     // Non memorizzare mai password in chiaro.
     public byte[] PasswordHash { get; set; } = [];
 

@@ -18,5 +18,7 @@ public interface IUtenteRepository
 
     Task<bool> UpdateAsync(UtenteDto dto, CancellationToken cancellationToken = default);
 
+    Task<bool> UpdateProfileImageUrlAsync(int id, string? profileImageUrl, CancellationToken cancellationToken = default);
+
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
 }
